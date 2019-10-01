@@ -13,11 +13,11 @@ class Monitor(object):
 
     search_rule = "site:%(site)s (%(filetype)s)" 
     site = "" 
-    def __init__(self, site=None):
-        if not site: 
-            sys.exit(1)
+    ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
 
-        self.site = site
+    def __init__(self, site=None):
+        site = urllib.parse.urlparse(site) 
+        self.site = site.path
     
     def mount_search(self):
         search_fmt = self.search_rule % {
@@ -28,7 +28,14 @@ class Monitor(object):
                  urllib.parse.quote_plus(search_fmt)
 
     def perform_search(self):
-        print(self.mount_search())
+        url = self.mount_search()
+        response = requests.get(url, {"User-Agent": self.ua})
+
+        soup = BeautifulSoup(response.text, "lxml")
+        print(soup.find_all("div.g"))
+        for g in soup.find_all(class_='g'):
+            print(g)
+            print('-----')
 
     def run(self):
         self.perform_search()
@@ -42,7 +49,7 @@ if __name__ == '__main__':
                         type=str,
                         nargs=1,
                         required=True,
-                        help="Website URL")
+                        help="Website URL (without schema)")
 
     args = parser.parse_args()
     mon = Monitor(site=args.site[0])
