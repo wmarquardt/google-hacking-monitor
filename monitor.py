@@ -1,7 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf8 -*-
 
+import urllib
 import sys
 import argparse
+from bs4 import BeautifulSoup
 import requests
 
 class Monitor(object):
@@ -17,10 +20,13 @@ class Monitor(object):
         self.site = site
     
     def mount_search(self):
-        return self.search_rule % {
+        search_fmt = self.search_rule % {
             "site": self.site,
             "filetype": " OR ".join(["filetype:%s" % x for x in self.extensions])
         }
+        return "https://google.com/search?q=%s" % \
+                 urllib.parse.quote_plus(search_fmt)
+
     def perform_search(self):
         print(self.mount_search())
 
