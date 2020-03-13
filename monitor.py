@@ -5,19 +5,23 @@ import urllib
 import sys
 import argparse
 from bs4 import BeautifulSoup
+from baseMonitor import BaseMonitor
 import requests
 
-class Monitor(object):
+class Monitor(BaseMonitor):
     extensions = ["sql", "pdf", "xls",
                   "xlsx", "doc"]
 
     search_rule = "site:%(site)s (%(filetype)s)" 
     site = "" 
+    debug = False
     ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
 
-    def __init__(self, site=None):
+    def __init__(self, site=None, debug=False):
         site = urllib.parse.urlparse(site) 
         self.site = site.path
+        self.debug = debug
+        self.print_debug("WARNING: debug is ON")
     
     def mount_search(self):
         search_fmt = self.search_rule % {
@@ -30,9 +34,8 @@ class Monitor(object):
     def perform_search(self):
         url = self.mount_search()
         response = requests.get(url, {"User-Agent": self.ua})
-
         soup = BeautifulSoup(response.text, "lxml")
-        print(soup.find_all("div.g"))
+        print(soup.find_all("div.kCrYT"))
         for g in soup.find_all(class_='g'):
             print(g)
             print('-----')
@@ -50,7 +53,10 @@ if __name__ == '__main__':
                         nargs=1,
                         required=True,
                         help="Website URL (without schema)")
-
+    parser.add_argument('--debug',
+                        dest='debug',
+                        action='store_true',
+                        help="Enable debug")
     args = parser.parse_args()
-    mon = Monitor(site=args.site[0])
+    mon = Monitor(site=args.site[0], debug=args.debug)
     mon.run()
