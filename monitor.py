@@ -18,9 +18,9 @@ class Monitor(BaseMonitor):
     ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
 
     def __init__(self, site=None, debug=False):
+        self.debug = debug
         site = urllib.parse.urlparse(site) 
         self.site = site.path
-        self.debug = debug
         self.print_debug("WARNING: debug is ON")
     
     def mount_search(self):
@@ -33,11 +33,11 @@ class Monitor(BaseMonitor):
 
     def perform_search(self):
         url = self.mount_search()
+        self.print_debug("Search URL:%s" % url)
         response = requests.get(url, {"User-Agent": self.ua})
         soup = BeautifulSoup(response.text, "lxml")
-        print(soup.find_all("div.kCrYT"))
-        for g in soup.find_all(class_='g'):
-            print(g)
+        for g in soup.find_all("div", class_='kCrYT'):
+            print(g.text)
             print('-----')
 
     def run(self):
