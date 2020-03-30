@@ -7,6 +7,7 @@ import argparse
 from bs4 import BeautifulSoup
 from baseMonitor import BaseMonitor
 import requests
+import re
 
 class Monitor(BaseMonitor):
     extensions = ["sql", "pdf", "xls",
@@ -37,7 +38,12 @@ class Monitor(BaseMonitor):
         response = requests.get(url, {"User-Agent": self.ua})
         soup = BeautifulSoup(response.text, "lxml")
         for g in soup.find_all("div", class_='kCrYT'):
-            print(g.text)
+            link = g.find('a',attrs={'href': re.compile("^/url?")})
+            if not link: continue
+
+            print(">>>>",link.get('href')[7:])
+            print('ok')
+            print(g)
             print('-----')
 
     def run(self):
