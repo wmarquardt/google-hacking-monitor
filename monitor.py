@@ -25,34 +25,62 @@ class Monitor(BaseMonitor):
         self.print_debug("WARNING: debug is ON")
     
     def mount_search(self):
+        # mount any possibility to get sensible data
+        mounted = []
+        search_url = "https://google.com/search?q=%s"
+
+        # file extension
         search_fmt = self.search_rule % {
             "site": self.site,
             "filetype": " OR ".join(["filetype:%s" % x for x in self.extensions])
         }
-        return "https://google.com/search?q=%s" % \
-                 urllib.parse.quote_plus(search_fmt)
+
+        mounted.append(search_url %
+                       urllib.parse.quote_plus(search_fmt))
+
+        # directory listing
+        # @TODO
+
+        return mounted
 
     def perform_search(self):
-        url = self.mount_search()
+        result = []
+        url = self.mount_search()[0]  # just for a while
         self.print_debug("Search URL:%s" % url)
         response = requests.get(url, {"User-Agent": self.ua})
         soup = BeautifulSoup(response.text, "lxml")
         for g in soup.find_all("div", class_='kCrYT'):
             link = g.find('a',attrs={'href': re.compile("^/url?")})
+            name = g.find('div', class_="vvjwJb")
             if not link: continue
 
-            print(">>>>",link.get('href')[7:])
-            print('ok')
-            print(g)
-            print('-----')
+            # get content
+            link = link.get('href')[7:]
+            name = name.getText()
+
+            result.append([name, link])
+
+        self.print_result(result)
+
+    def print_result(self, result):
+        # @TODO separate in groups and print
+        if not result:
+            # This does not mean that your website is secure xD
+            print("Any sensitive results found.")
+            return
+
+        print("Potential sentitive data were found\n\n")
+        for res in result:
+            print("!%s\n%s\n\n" % (res[0], res[1]))
 
     def run(self):
         self.perform_search()
 
 if __name__ == '__main__':
     parser = argparse.\
-              ArgumentParser(\
-                description='Check google search result by extension')
+        ArgumentParser(description='Check potential dangerous information\
+                                    about your site in Google Search page\
+                                    like directory listing and indexed files by extension.')
     parser.add_argument('-s',
                         '--site',
                         type=str,
@@ -63,6 +91,7 @@ if __name__ == '__main__':
                         dest='debug',
                         action='store_true',
                         help="Enable debug")
+
     args = parser.parse_args()
     mon = Monitor(site=args.site[0], debug=args.debug)
     mon.run()
