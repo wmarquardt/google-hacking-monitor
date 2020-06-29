@@ -27,20 +27,19 @@ class Monitor(BaseMonitor):
     def mount_search(self):
         # mount any possibility to get sensible data
         mounted = []
-        search_url = "https://google.com/search?q=%s" 
+        search_url = "https://google.com/search?q=%s"
 
-
-        ## file extension
+        # file extension
         search_fmt = self.search_rule % {
             "site": self.site,
             "filetype": " OR ".join(["filetype:%s" % x for x in self.extensions])
         }
     
-        mounted.append(search_url % \
+        mounted.append(search_url % 
                         urllib.parse.quote_plus(search_fmt))
 
-        ## directory listing
-        ## #TODO
+        # directory listing
+        # @TODO
 
         return  mounted
 
@@ -73,7 +72,6 @@ class Monitor(BaseMonitor):
         print("Potential sentitive data were found\n\n")
         for res in result:
             print("!%s\n%s\n\n" % (res[0], res[1]))
-            
     
     def run(self):
         self.perform_search()
