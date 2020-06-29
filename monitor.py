@@ -34,18 +34,18 @@ class Monitor(BaseMonitor):
             "site": self.site,
             "filetype": " OR ".join(["filetype:%s" % x for x in self.extensions])
         }
-    
-        mounted.append(search_url % 
-                        urllib.parse.quote_plus(search_fmt))
+
+        mounted.append(search_url %
+                       urllib.parse.quote_plus(search_fmt))
 
         # directory listing
         # @TODO
 
-        return  mounted
+        return mounted
 
     def perform_search(self):
         result = []
-        url = self.mount_search()[0] # just for a while
+        url = self.mount_search()[0]  # just for a while
         self.print_debug("Search URL:%s" % url)
         response = requests.get(url, {"User-Agent": self.ua})
         soup = BeautifulSoup(response.text, "lxml")
