@@ -79,9 +79,9 @@ class Monitor(BaseMonitor):
 if __name__ == '__main__':
     parser = argparse.\
               ArgumentParser(\
-              description='Check potential dangerous information\
-                           about your site in Google Search page\
-                           like directory listing and indexed files by extension.')
+                             description='Check potential dangerous information\
+                             about your site in Google Search page\
+                             like directory listing and indexed files by extension.')
     parser.add_argument('-s',
                         '--site',
                         type=str,
