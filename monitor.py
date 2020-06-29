@@ -61,27 +61,27 @@ class Monitor(BaseMonitor):
             result.append([name, link])
 
         self.print_result(result)
-    
+
     def print_result(self, result):
-        ## @TODO separate in groups and print
+        # @TODO separate in groups and print
         if not result:
             # This does not mean that your website is secure xD
-            print("Any sensitive results found.") 
+            print("Any sensitive results found.")
             return
-        
+
         print("Potential sentitive data were found\n\n")
         for res in result:
             print("!%s\n%s\n\n" % (res[0], res[1]))
-    
+
     def run(self):
         self.perform_search()
 
 if __name__ == '__main__':
     parser = argparse.\
               ArgumentParser(\
-                description='Check potential dangerous information\
-                             about your site in Google Search page\
-                             like directory listing and indexed files by extension.')
+              description='Check potential dangerous information\
+                           about your site in Google Search page\
+                           like directory listing and indexed files by extension.')
     parser.add_argument('-s',
                         '--site',
                         type=str,
