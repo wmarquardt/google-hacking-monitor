@@ -19,10 +19,10 @@ class Monitor(BaseMonitor):
     ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
 
     def __init__(self, site=None, debug=False):
-        self.debug = debug
+        super(Monitor, self).__init__(debug=debug)
         site = urllib.parse.urlparse(site) 
         self.site = site.path
-        self.print_debug("WARNING: debug is ON")
+        self.logger.debug("debug is ON")
     
     def mount_search(self):
         # mount any possibility to get sensible data
@@ -40,13 +40,14 @@ class Monitor(BaseMonitor):
 
         # directory listing
         # @TODO
-
+        
+        self.logger.warning("Search mounted: %s " % mounted)
         return mounted
 
     def perform_search(self):
         result = []
         url = self.mount_search()[0]  # just for a while
-        self.print_debug("Search URL:%s" % url)
+        self.logger.debug("Search URL: %s" % url)
         response = requests.get(url, {"User-Agent": self.ua})
         soup = BeautifulSoup(response.text, "lxml")
         for g in soup.find_all("div", class_='kCrYT'):
@@ -71,7 +72,8 @@ class Monitor(BaseMonitor):
 
         print("Potential sentitive data were found\n\n")
         for res in result:
-            print("!%s\n%s\n\n" % (res[0], res[1]))
+            print("%s!%s%s\n%s\n\n" % (
+                self.OKCYAN, res[0], self.ENDC, res[1]))
 
     def run(self):
         self.perform_search()
